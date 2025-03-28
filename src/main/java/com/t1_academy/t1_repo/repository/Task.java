@@ -1,33 +1,30 @@
 package com.t1_academy.t1_repo.repository;
 
 import jakarta.persistence.*;
-import lombok.Getter;
-import lombok.Setter;
-import lombok.ToString;
+import lombok.*;
+import jakarta.validation.constraints.NotBlank;
 
+
+@Entity
+@Table(name = "tasks")
 @Getter
 @Setter
 @ToString
-@Entity
-@Table(name = "tasks")
+@NoArgsConstructor
+@AllArgsConstructor
 public class Task {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
-    @Column(name = "title")
+
+    @NotBlank(message = "Название задачи не должно быть пустым")
+    @Column(nullable = false)
     private String title;
-    @Column(name = "description")
+
     private String description;
-    @Column(name = "user_id")
+
+    @Column(name = "user_id", nullable = false)
     private Long userId;
 
-    public Task() {  // для подключения Hibernate
-    }
 
-    public Task(Long id, String title, String description, Long userId) {
-        this.id = id;
-        this.title = title;
-        this.description = description;
-        this.userId = userId;
-    }
 }

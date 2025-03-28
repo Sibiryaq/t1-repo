@@ -8,6 +8,6 @@ CREATE TABLE IF NOT EXISTS tasks
 );
 
 INSERT INTO tasks (title, description, user_id) VALUES
-('Task 1', 'Description of Task 1', 1),
-('Task 2', 'Description of Task 2', 2),
-('Task 3', 'Description of Task 3', 1);
+('Задача 1', 'Описание задачи 1', 1),
+('Задача 2', 'Описание задачи 2', 2),
+('Задача 3', 'Описание задачи 3', 1);

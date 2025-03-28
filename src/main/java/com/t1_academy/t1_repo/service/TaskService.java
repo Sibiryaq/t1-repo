@@ -6,7 +6,6 @@ import com.t1_academy.t1_repo.repository.TaskRepository;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
-import java.util.Optional;
 
 @Service
 public class TaskService {
@@ -22,14 +21,11 @@ public class TaskService {
     }
 
     public Task getTaskById(Long id) {
-        Optional<Task> optionalTask = taskRepository.findById(id);
-        return optionalTask.orElse(null);
+        return taskRepository.findById(id)
+                .orElseThrow(() -> new TaskNotFoundException("Задача с id: " + id + " не найдена"));
     }
 
     public Task create(Task task) {
-        if (task.getTitle() == null || task.getTitle().isEmpty()) {
-            throw new IllegalArgumentException("Описание не должно быть пустым");
-        }
         return taskRepository.save(task);
     }
 
@@ -44,15 +40,15 @@ public class TaskService {
         Task task = taskRepository.findById(id)
                 .orElseThrow(() -> new TaskNotFoundException("Задачи с id: " + id + " не существует"));
 
-        if (title != null && !title.equals(task.getTitle())) {
+        if (title != null) {
             task.setTitle(title);
         }
 
-        if (description != null && !description.equals(task.getDescription())) {
+        if (description != null) {
             task.setDescription(description);
         }
 
-        if (userId != null && !userId.equals(task.getUserId())) {
+        if (userId != null) {
             task.setUserId(userId);
         }
 

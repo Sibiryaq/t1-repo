@@ -2,19 +2,18 @@ package com.t1_academy.t1_repo.controller;
 
 import com.t1_academy.t1_repo.repository.Task;
 import com.t1_academy.t1_repo.service.TaskService;
+import jakarta.validation.Valid;
+import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 
 @RestController
 @RequestMapping("/tasks")
+@RequiredArgsConstructor
 public class TaskController {
 
     private final TaskService taskService;
-
-    public TaskController(TaskService taskService) {
-        this.taskService = taskService;
-    }
 
     @GetMapping
     public List<Task> getTasks() {
@@ -27,7 +26,7 @@ public class TaskController {
     }
 
     @PostMapping
-    public Task createTask(@RequestBody Task task) {
+    public Task createTask(@Valid @RequestBody Task task) {
         return taskService.create(task);
     }
 
