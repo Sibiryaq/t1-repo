@@ -4,7 +4,6 @@ import jakarta.persistence.*;
 import lombok.*;
 import jakarta.validation.constraints.NotBlank;
 
-
 @Entity
 @Table(name = "tasks")
 @Getter
