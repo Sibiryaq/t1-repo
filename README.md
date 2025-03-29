@@ -1,4 +1,12 @@
 # t1-repo
-spring.datasource.url=jdbc:postgresql://localhost:5432/postgres
-spring.datasource.username=postgres
-spring.datasource.password=iamroot
+для запуска проекта необходимо выполнить 2 команды в терминале: 
+
+```mvn clean package -DskipTests```
+* Maven соберет ваш проект и создаст JAR-файл в папке target/.
+
+
+```docker-compose up --build```
+* Создаст Docker-образы для PostgreSQL и вашего приложения.
+* Запустит их в контейнерах.
+
+
