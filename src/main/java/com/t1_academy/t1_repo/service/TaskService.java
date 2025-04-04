@@ -5,11 +5,13 @@ import com.t1_academy.t1_repo.aspect.annotation.LogException;
 import com.t1_academy.t1_repo.aspect.annotation.LogExecution;
 import com.t1_academy.t1_repo.aspect.annotation.LogTracking;
 import com.t1_academy.t1_repo.exception.TaskNotFoundException;
+import com.t1_academy.t1_repo.model.dto.TaskDto;
 import com.t1_academy.t1_repo.model.entity.Task;
 import com.t1_academy.t1_repo.repository.TaskRepository;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
+import java.util.stream.Collectors;
 
 @Service
 public class TaskService {
@@ -21,19 +23,26 @@ public class TaskService {
     }
 
     @LogExecution
-    public List<Task> getTasks() {
-        return taskRepository.findAll();
+    public List<TaskDto> getTasks() {
+        return taskRepository.findAll().stream()
+                .map(this::convertToDto)
+                .collect(Collectors.toList());
     }
 
     @LogException
-    public Task getTaskById(Long id) {
-        return taskRepository.findById(id)
+    public TaskDto getTaskById(Long id) {
+        Task task = taskRepository.findById(id)
                 .orElseThrow(() -> new TaskNotFoundException("Задача с id: " + id + " не найдена"));
+        return convertToDto(task);
     }
 
     @HandlingResult
-    public Task create(Task task) {
-        return taskRepository.save(task);
+    public TaskDto create(TaskDto taskDto) {
+        Task task = new Task();
+        task.setTitle(taskDto.getTitle());
+        task.setDescription(taskDto.getDescription());
+        task.setUserId(taskDto.getUserId());
+        return convertToDto(taskRepository.save(task));
     }
 
     @LogExecution
@@ -63,5 +72,13 @@ public class TaskService {
         }
 
         taskRepository.save(task);
+    }
+
+    private TaskDto convertToDto(Task task) {
+        return new TaskDto(
+                task.getId(),
+                task.getTitle(),
+                task.getDescription(),
+                task.getUserId());
     }
 }

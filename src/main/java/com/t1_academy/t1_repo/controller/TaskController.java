@@ -1,6 +1,6 @@
 package com.t1_academy.t1_repo.controller;
 
-import com.t1_academy.t1_repo.model.entity.Task;
+import com.t1_academy.t1_repo.model.dto.TaskDto;
 import com.t1_academy.t1_repo.service.TaskService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
@@ -16,18 +16,18 @@ public class TaskController {
     private final TaskService taskService;
 
     @GetMapping
-    public List<Task> getTasks() {
+    public List<TaskDto> getTasks() {
         return taskService.getTasks();
     }
 
     @GetMapping("/{id}")
-    public Task getTaskById(@PathVariable Long id) {
+    public TaskDto getTaskById(@PathVariable Long id) {
         return taskService.getTaskById(id);
     }
 
     @PostMapping
-    public Task createTask(@Valid @RequestBody Task task) {
-        return taskService.create(task);
+    public TaskDto createTask(@Valid @RequestBody TaskDto taskDto) {
+        return taskService.create(taskDto);
     }
 
     @PutMapping("{id}")

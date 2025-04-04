@@ -24,6 +24,4 @@ public class Task {
 
     @Column(name = "user_id", nullable = false)
     private Long userId;
-
-
 }

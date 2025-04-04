@@ -1,6 +1,7 @@
 package com.t1_academy.t1_repo;
 
 import com.t1_academy.t1_repo.exception.TaskNotFoundException;
+import com.t1_academy.t1_repo.model.dto.TaskDto;
 import com.t1_academy.t1_repo.model.entity.Task;
 import com.t1_academy.t1_repo.repository.TaskRepository;
 import com.t1_academy.t1_repo.service.TaskService;
@@ -37,10 +38,13 @@ class TaskServiceTest {
     void shouldReturnAllTasks() {
         when(taskRepository.findAll()).thenReturn(List.of(testTask));
 
-        List<Task> tasks = taskService.getTasks();
+        List<TaskDto> tasks = taskService.getTasks();
 
         assertEquals(1, tasks.size());
         assertEquals("Название", tasks.get(0).getTitle());
+        assertEquals("Описание", tasks.get(0).getDescription());
+        assertEquals(100L, tasks.get(0).getUserId());
+
         verify(taskRepository, times(1)).findAll();
     }
 
@@ -48,11 +52,12 @@ class TaskServiceTest {
     void shouldReturnTaskById() {
         when(taskRepository.findById(1L)).thenReturn(Optional.of(testTask));
 
-        Task foundTask = taskService.getTaskById(1L);
+        TaskDto task = taskService.getTaskById(1L);
 
-        assertNotNull(foundTask);
-        assertEquals(1L, foundTask.getId());
-        assertEquals("Название", foundTask.getTitle());
+        assertNotNull(task);
+        assertEquals(1L, task.getId());
+        assertEquals("Название", task.getTitle());
+
         verify(taskRepository, times(1)).findById(1L);
     }
 
@@ -60,7 +65,8 @@ class TaskServiceTest {
     void shouldThrowExceptionWhenTaskNotFound() {
         when(taskRepository.findById(2L)).thenReturn(Optional.empty());
 
-        Exception exception = assertThrows(TaskNotFoundException.class, () -> taskService.getTaskById(2L));
+        Exception exception = assertThrows(TaskNotFoundException.class,
+                () -> taskService.getTaskById(2L));
 
         assertEquals("Задача с id: 2 не найдена", exception.getMessage());
         verify(taskRepository, times(1)).findById(2L);
@@ -68,13 +74,18 @@ class TaskServiceTest {
 
     @Test
     void shouldCreateTask() {
+        TaskDto inputDto = new TaskDto(null, "Название", "Описание", 100L);
+
         when(taskRepository.save(any(Task.class))).thenReturn(testTask);
 
-        Task createdTask = taskService.create(testTask);
+        TaskDto created = taskService.create(inputDto);
 
-        assertNotNull(createdTask);
-        assertEquals("Название", createdTask.getTitle());
-        verify(taskRepository, times(1)).save(testTask);
+        assertNotNull(created);
+        assertEquals("Название", created.getTitle());
+        assertEquals("Описание", created.getDescription());
+        assertEquals(100L, created.getUserId());
+
+        verify(taskRepository, times(1)).save(any(Task.class));
     }
 
     @Test
@@ -90,7 +101,8 @@ class TaskServiceTest {
     void shouldThrowExceptionWhenDeletingNonexistentTask() {
         when(taskRepository.existsById(2L)).thenReturn(false);
 
-        Exception exception = assertThrows(TaskNotFoundException.class, () -> taskService.delete(2L));
+        Exception exception = assertThrows(TaskNotFoundException.class,
+                () -> taskService.delete(2L));
 
         assertEquals("Задачи с id: 2 не существует", exception.getMessage());
         verify(taskRepository, never()).deleteById(anyLong());
@@ -122,7 +134,6 @@ class TaskServiceTest {
                 () -> taskService.update(2L, "Новое название", "Новое описание", 300L));
 
         assertEquals("Задачи с id: 2 не существует", exception.getMessage());
-
         verify(taskRepository, never()).save(any(Task.class));
     }
 }
