@@ -1,6 +1,6 @@
 package com.t1_academy.t1_repo;
 
-import com.t1_academy.t1_repo.exceptions.TaskNotFoundException;
+import com.t1_academy.t1_repo.exception.TaskNotFoundException;
 import com.t1_academy.t1_repo.model.entity.Task;
 import com.t1_academy.t1_repo.repository.TaskRepository;
 import com.t1_academy.t1_repo.service.TaskService;

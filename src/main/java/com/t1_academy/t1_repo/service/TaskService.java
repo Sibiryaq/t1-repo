@@ -4,7 +4,7 @@ import com.t1_academy.t1_repo.aspect.annotation.HandlingResult;
 import com.t1_academy.t1_repo.aspect.annotation.LogException;
 import com.t1_academy.t1_repo.aspect.annotation.LogExecution;
 import com.t1_academy.t1_repo.aspect.annotation.LogTracking;
-import com.t1_academy.t1_repo.exceptions.TaskNotFoundException;
+import com.t1_academy.t1_repo.exception.TaskNotFoundException;
 import com.t1_academy.t1_repo.model.entity.Task;
 import com.t1_academy.t1_repo.repository.TaskRepository;
 import org.springframework.stereotype.Service;
