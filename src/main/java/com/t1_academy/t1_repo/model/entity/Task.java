@@ -1,4 +1,4 @@
-package com.t1_academy.t1_repo.repository;
+package com.t1_academy.t1_repo.model.entity;
 
 import jakarta.persistence.*;
 import lombok.*;

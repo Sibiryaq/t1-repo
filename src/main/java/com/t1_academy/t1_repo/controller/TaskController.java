@@ -1,6 +1,6 @@
 package com.t1_academy.t1_repo.controller;
 
-import com.t1_academy.t1_repo.repository.Task;
+import com.t1_academy.t1_repo.model.entity.Task;
 import com.t1_academy.t1_repo.service.TaskService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
