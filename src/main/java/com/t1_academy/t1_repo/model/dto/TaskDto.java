@@ -1,5 +1,6 @@
 package com.t1_academy.t1_repo.model.dto;
 
+import com.t1_academy.t1_repo.model.entity.TaskStatus;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 
@@ -10,5 +11,6 @@ public class TaskDto {
     private String title;
     private String description;
     private Long userId;
+    private TaskStatus status;
 }
 

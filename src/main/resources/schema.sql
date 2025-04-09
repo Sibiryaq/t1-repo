@@ -4,5 +4,6 @@ CREATE TABLE IF NOT EXISTS tasks
     title       VARCHAR(255),
     description VARCHAR(255),
     user_id     bigint,
+    status      VARCHAR(50) NOT NULL DEFAULT 'NEW',
     CONSTRAINT tasks_pk PRIMARY KEY (id)
 );
