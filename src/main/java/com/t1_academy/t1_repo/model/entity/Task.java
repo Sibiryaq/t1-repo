@@ -27,5 +27,5 @@ public class Task {
 
     @Enumerated(EnumType.STRING)
     @Column(nullable = false)
-    private TaskStatus status = TaskStatus.NEW;
+    private TaskStatus status;
 }

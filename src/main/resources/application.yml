@@ -12,3 +12,14 @@ spring:
       mode: always
       schema-locations: classpath:schema.sql
       data-locations: classpath:data.sql
+
+  mail:
+    host: smtp.yandex.com
+    port: 465
+    username: sibiryaqdev@mail.ru
+    password:
+    protocol: smtps
+    properties:
+      mail.smtp.auth: true
+      mail.smtp.starttls.enable: true
+      mail.smtp.ssl.enable: true

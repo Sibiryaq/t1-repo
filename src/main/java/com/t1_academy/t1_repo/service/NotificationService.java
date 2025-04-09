@@ -1,6 +1,8 @@
-package com.t1_academy.t1_repo.kafka;
+package com.t1_academy.t1_repo.service;
 
 import lombok.RequiredArgsConstructor;
+import org.springframework.mail.SimpleMailMessage;
+import org.springframework.mail.javamail.JavaMailSender;
 import org.springframework.stereotype.Service;
 
 @Service

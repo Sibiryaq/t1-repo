@@ -63,16 +63,23 @@ public class TaskService {
         Task task = taskRepository.findById(id)
                 .orElseThrow(() -> new TaskNotFoundException("Задачи с id: " + id + " не существует"));
 
+        boolean statusChanged = false;
+
         if (title != null) task.setTitle(title);
         if (description != null) task.setDescription(description);
         if (userId != null) task.setUserId(userId);
 
         if (status != null && !status.equals(task.getStatus())) {
             task.setStatus(status);
-            kafkaProducer.sendStatusUpdate(task.getId(), status);
+            statusChanged = true;
         }
 
         taskRepository.save(task);
+
+        // только если статус изменился, отправим в Kafka
+        if (statusChanged) {
+            kafkaProducer.sendStatusUpdate(task.getId(), status);
+        }
     }
 
     private TaskDto convertToDto(Task task) {
