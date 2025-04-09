@@ -1,6 +1,7 @@
 package com.t1_academy.t1_repo.controller;
 
 import com.t1_academy.t1_repo.model.dto.TaskDto;
+import com.t1_academy.t1_repo.model.entity.TaskStatus;
 import com.t1_academy.t1_repo.service.TaskService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
@@ -34,8 +35,9 @@ public class TaskController {
     public void updateTask(@PathVariable Long id,
                            @RequestParam(required = false) String title,
                            @RequestParam(required = false) String description,
-                           @RequestParam(required = false) Long userId) {
-        taskService.update(id, title, description, userId);
+                           @RequestParam(required = false) Long userId,
+                           @RequestParam(required = false) TaskStatus status) {
+        taskService.update(id, title, description, userId, status);
     }
 
     @DeleteMapping("/{id}")

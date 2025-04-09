@@ -5,8 +5,10 @@ import com.t1_academy.t1_repo.aspect.annotation.LogException;
 import com.t1_academy.t1_repo.aspect.annotation.LogExecution;
 import com.t1_academy.t1_repo.aspect.annotation.LogTracking;
 import com.t1_academy.t1_repo.exception.TaskNotFoundException;
+import com.t1_academy.t1_repo.kafka.KafkaProducer;
 import com.t1_academy.t1_repo.model.dto.TaskDto;
 import com.t1_academy.t1_repo.model.entity.Task;
+import com.t1_academy.t1_repo.model.entity.TaskStatus;
 import com.t1_academy.t1_repo.repository.TaskRepository;
 import org.springframework.stereotype.Service;
 
@@ -17,9 +19,11 @@ import java.util.stream.Collectors;
 public class TaskService {
 
     private final TaskRepository taskRepository;
+    private final KafkaProducer kafkaProducer;
 
-    public TaskService(TaskRepository taskRepository) {
+    public TaskService(TaskRepository taskRepository, KafkaProducer kafkaProducer) {
         this.taskRepository = taskRepository;
+        this.kafkaProducer = kafkaProducer;
     }
 
     @LogExecution
@@ -55,20 +59,17 @@ public class TaskService {
     }
 
     @LogTracking
-    public void update(Long id, String title, String description, Long userId) {
+    public void update(Long id, String title, String description, Long userId, TaskStatus status) {
         Task task = taskRepository.findById(id)
                 .orElseThrow(() -> new TaskNotFoundException("Задачи с id: " + id + " не существует"));
 
-        if (title != null) {
-            task.setTitle(title);
-        }
+        if (title != null) task.setTitle(title);
+        if (description != null) task.setDescription(description);
+        if (userId != null) task.setUserId(userId);
 
-        if (description != null) {
-            task.setDescription(description);
-        }
-
-        if (userId != null) {
-            task.setUserId(userId);
+        if (status != null && !status.equals(task.getStatus())) {
+            task.setStatus(status);
+            kafkaProducer.sendStatusUpdate(task.getId(), status);
         }
 
         taskRepository.save(task);
