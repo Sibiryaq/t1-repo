@@ -79,6 +79,7 @@ public class TaskService {
                 task.getId(),
                 task.getTitle(),
                 task.getDescription(),
-                task.getUserId());
+                task.getUserId(),
+                task.getStatus());
     }
 }
