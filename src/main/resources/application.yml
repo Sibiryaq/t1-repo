@@ -12,3 +12,28 @@ spring:
       mode: always
       schema-locations: classpath:schema.sql
       data-locations: classpath:data.sql
+
+  kafka:
+    bootstrap-servers: localhost:9092
+
+  mail:
+    host: smtp.gmail.com
+    port: 587
+    username: sibiryaqdev@mail.ru
+    password: asdc zxcv qwer asdf
+    properties:
+      mail:
+        smtp:
+          auth: true
+          starttls:
+            enable: true
+
+task:
+  kafka:
+    topic:
+      status-updated: task-status-topic
+    consumer:
+      group-id: task-status-group
+
+notification:
+  email: sibiryaqdev@mail.ru
