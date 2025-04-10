@@ -11,7 +11,6 @@ import jakarta.validation.constraints.NotBlank;
 @ToString
 @NoArgsConstructor
 @AllArgsConstructor
-@Data
 @EqualsAndHashCode
 public class Task {
     @Id
