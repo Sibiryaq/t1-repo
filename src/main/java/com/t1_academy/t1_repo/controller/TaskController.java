@@ -32,10 +32,8 @@ public class TaskController {
 
     @PutMapping("{id}")
     public void updateTask(@PathVariable Long id,
-                           @RequestParam(required = false) String title,
-                           @RequestParam(required = false) String description,
-                           @RequestParam(required = false) Long userId) {
-        taskService.update(id, title, description, userId);
+                           @RequestBody TaskDTO taskDTO) {
+        taskService.update(id, taskDTO);
     }
 
     @DeleteMapping("/{id}")

@@ -5,6 +5,7 @@ import com.t1_academy.t1_repo.aspect.annotation.LogException;
 import com.t1_academy.t1_repo.aspect.annotation.LogExecution;
 import com.t1_academy.t1_repo.aspect.annotation.LogTracking;
 import com.t1_academy.t1_repo.exception.TaskNotFoundException;
+import com.t1_academy.t1_repo.mapper.TaskMapper;
 import com.t1_academy.t1_repo.model.dto.TaskDTO;
 import com.t1_academy.t1_repo.model.entity.Task;
 import com.t1_academy.t1_repo.repository.TaskRepository;
@@ -17,32 +18,35 @@ import java.util.stream.Collectors;
 public class TaskService {
 
     private final TaskRepository taskRepository;
+    private final TaskMapper taskMapper;
 
-    public TaskService(TaskRepository taskRepository) {
+    public TaskService(TaskRepository taskRepository, TaskMapper taskMapper) {
         this.taskRepository = taskRepository;
+        this.taskMapper = taskMapper;
     }
 
     @LogExecution
     public List<TaskDTO> getTasks() {
-        return taskRepository.findAll().stream()
-                .map(this::convertToDto)
+        List<Task> tasks = taskRepository.findAll();
+        if (tasks.isEmpty()) {
+            throw new TaskNotFoundException("Задач нет");
+        }
+        return tasks.stream()
+                .map(taskMapper::toDTO)
                 .collect(Collectors.toList());
     }
 
     @LogException
     public TaskDTO getTaskById(Long id) {
-        Task task = taskRepository.findById(id)
+        return taskRepository.findById(id)
+                .map(taskMapper::toDTO)
                 .orElseThrow(() -> new TaskNotFoundException("Задача с id: " + id + " не найдена"));
-        return convertToDto(task);
     }
 
     @HandlingResult
-    public TaskDTO create(TaskDTO taskDto) {
-        Task task = new Task();
-        task.setTitle(taskDto.getTitle());
-        task.setDescription(taskDto.getDescription());
-        task.setUserId(taskDto.getUserId());
-        return convertToDto(taskRepository.save(task));
+    public TaskDTO create(TaskDTO taskDTO) {
+        Task task = taskMapper.toEntity(taskDTO);
+        return taskMapper.toDTO(taskRepository.save(task));
     }
 
     @LogExecution
@@ -55,30 +59,13 @@ public class TaskService {
     }
 
     @LogTracking
-    public void update(Long id, String title, String description, Long userId) {
-        Task task = taskRepository.findById(id)
+    public TaskDTO update(Long id, TaskDTO taskDTO) {
+        Task currentTask = taskRepository.findById(id)
                 .orElseThrow(() -> new TaskNotFoundException("Задачи с id: " + id + " не существует"));
-
-        if (title != null) {
-            task.setTitle(title);
-        }
-
-        if (description != null) {
-            task.setDescription(description);
-        }
-
-        if (userId != null) {
-            task.setUserId(userId);
-        }
-
-        taskRepository.save(task);
+        currentTask.setDescription(taskDTO.getDescription());
+        currentTask.setTitle(taskDTO.getTitle());
+        currentTask.setUserId(taskDTO.getUserId());
+        return taskMapper.toDTO(taskRepository.save(currentTask));
     }
 
-    private TaskDTO convertToDto(Task task) {
-        return new TaskDTO(
-                task.getId(),
-                task.getTitle(),
-                task.getDescription(),
-                task.getUserId());
-    }
 }
