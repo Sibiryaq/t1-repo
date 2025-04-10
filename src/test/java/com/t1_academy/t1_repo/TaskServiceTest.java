@@ -1,7 +1,7 @@
 package com.t1_academy.t1_repo;
 
 import com.t1_academy.t1_repo.exception.TaskNotFoundException;
-import com.t1_academy.t1_repo.model.dto.TaskDto;
+import com.t1_academy.t1_repo.model.dto.TaskDTO;
 import com.t1_academy.t1_repo.model.entity.Task;
 import com.t1_academy.t1_repo.repository.TaskRepository;
 import com.t1_academy.t1_repo.service.TaskService;
@@ -38,7 +38,7 @@ class TaskServiceTest {
     void shouldReturnAllTasks() {
         when(taskRepository.findAll()).thenReturn(List.of(testTask));
 
-        List<TaskDto> tasks = taskService.getTasks();
+        List<TaskDTO> tasks = taskService.getTasks();
 
         assertEquals(1, tasks.size());
         assertEquals("Название", tasks.get(0).getTitle());
@@ -52,7 +52,7 @@ class TaskServiceTest {
     void shouldReturnTaskById() {
         when(taskRepository.findById(1L)).thenReturn(Optional.of(testTask));
 
-        TaskDto task = taskService.getTaskById(1L);
+        TaskDTO task = taskService.getTaskById(1L);
 
         assertNotNull(task);
         assertEquals(1L, task.getId());
@@ -74,11 +74,11 @@ class TaskServiceTest {
 
     @Test
     void shouldCreateTask() {
-        TaskDto inputDto = new TaskDto(null, "Название", "Описание", 100L);
+        TaskDTO inputDto = new TaskDTO(null, "Название", "Описание", 100L);
 
         when(taskRepository.save(any(Task.class))).thenReturn(testTask);
 
-        TaskDto created = taskService.create(inputDto);
+        TaskDTO created = taskService.create(inputDto);
 
         assertNotNull(created);
         assertEquals("Название", created.getTitle());
