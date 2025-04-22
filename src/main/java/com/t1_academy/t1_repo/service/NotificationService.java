@@ -28,4 +28,5 @@ public class NotificationService {
         message.setText("Task ID " + taskId + " has changed status to: " + status);
         mailSender.send(message);
     }
+
 }

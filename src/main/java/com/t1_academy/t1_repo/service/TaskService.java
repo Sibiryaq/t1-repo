@@ -76,10 +76,8 @@ public class TaskService {
 
         Task updated = taskRepository.save(currentTask);
 
-        if(!oldStatus.equals(taskDTO.getStatus())) {
-            TaskStatusUpdateDTO kafkaDTO = taskMapper.toStatusUpdateDTO(updated);
-            kafkaProducer.sendTo(kafkaTopic, kafkaDTO);
-        }
+        TaskStatusUpdateDTO kafkaDTO = taskMapper.toStatusUpdateDTO(updated);
+        kafkaProducer.sendTo(kafkaTopic, kafkaDTO);
         return taskMapper.toDTO(updated);
     }
 

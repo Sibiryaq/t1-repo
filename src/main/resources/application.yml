@@ -15,12 +15,19 @@ spring:
 
   kafka:
     bootstrap-servers: localhost:9092
+    consumer:
+      group-id: task-status-group
+      auto-offset-reset: earliest
+
+    listener:
+      ack-mode: manual
+      type: batch
 
   mail:
     host: smtp.gmail.com
     port: 587
-    username: sibiryaqdev@mail.ru
-    password: asdc zxcv qwer asdf
+    username: alexandrt208@gmail.com
+    password: zrrw whid qugg ydcu
     properties:
       mail:
         smtp:
