@@ -5,44 +5,53 @@ import com.t1_academy.t1_repo.aspect.annotation.LogException;
 import com.t1_academy.t1_repo.aspect.annotation.LogExecution;
 import com.t1_academy.t1_repo.aspect.annotation.LogTracking;
 import com.t1_academy.t1_repo.exception.TaskNotFoundException;
-import com.t1_academy.t1_repo.model.dto.TaskDto;
+import com.t1_academy.t1_repo.kafka.KafkaTaskProducer;
+import com.t1_academy.t1_repo.mapper.TaskMapper;
+import com.t1_academy.t1_repo.model.dto.TaskDTO;
+import com.t1_academy.t1_repo.model.dto.TaskStatusUpdateDTO;
 import com.t1_academy.t1_repo.model.entity.Task;
 import com.t1_academy.t1_repo.repository.TaskRepository;
+import lombok.RequiredArgsConstructor;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 import java.util.stream.Collectors;
 
 @Service
+@RequiredArgsConstructor
 public class TaskService {
 
     private final TaskRepository taskRepository;
+    private final TaskMapper taskMapper;
+    private final KafkaTaskProducer kafkaProducer;
 
-    public TaskService(TaskRepository taskRepository) {
-        this.taskRepository = taskRepository;
-    }
+    @Value("${task.kafka.topic.status-updated}")
+    private String kafkaTopic;
 
     @LogExecution
-    public List<TaskDto> getTasks() {
-        return taskRepository.findAll().stream()
-                .map(this::convertToDto)
+    public List<TaskDTO> getTasks() {
+        List<Task> tasks = taskRepository.findAll();
+        if (tasks.isEmpty()) {
+            throw new TaskNotFoundException("Задач нет");
+        }
+        return tasks.stream()
+                .map(taskMapper::toDTO)
                 .collect(Collectors.toList());
     }
 
     @LogException
-    public TaskDto getTaskById(Long id) {
-        Task task = taskRepository.findById(id)
+    public TaskDTO getTaskById(Long id) {
+        return taskRepository.findById(id)
+                .map(taskMapper::toDTO)
                 .orElseThrow(() -> new TaskNotFoundException("Задача с id: " + id + " не найдена"));
-        return convertToDto(task);
     }
 
     @HandlingResult
-    public TaskDto create(TaskDto taskDto) {
-        Task task = new Task();
-        task.setTitle(taskDto.getTitle());
-        task.setDescription(taskDto.getDescription());
-        task.setUserId(taskDto.getUserId());
-        return convertToDto(taskRepository.save(task));
+    public TaskDTO create(TaskDTO taskDTO) {
+        Task task = taskMapper.toEntity(taskDTO);
+        return taskMapper.toDTO(taskRepository.save(task));
     }
 
     @LogExecution
@@ -55,30 +64,21 @@ public class TaskService {
     }
 
     @LogTracking
-    public void update(Long id, String title, String description, Long userId) {
-        Task task = taskRepository.findById(id)
+    @Transactional
+    public TaskDTO update(Long id, TaskDTO taskDTO) {
+        Task currentTask = taskRepository.findById(id)
                 .orElseThrow(() -> new TaskNotFoundException("Задачи с id: " + id + " не существует"));
+        String oldStatus = currentTask.getStatus().name();
+        currentTask.setDescription(taskDTO.getDescription());
+        currentTask.setTitle(taskDTO.getTitle());
+        currentTask.setUserId(taskDTO.getUserId());
+        currentTask.setStatus(taskDTO.getStatus());
 
-        if (title != null) {
-            task.setTitle(title);
-        }
+        Task updated = taskRepository.save(currentTask);
 
-        if (description != null) {
-            task.setDescription(description);
-        }
-
-        if (userId != null) {
-            task.setUserId(userId);
-        }
-
-        taskRepository.save(task);
+        TaskStatusUpdateDTO kafkaDTO = taskMapper.toStatusUpdateDTO(updated);
+        kafkaProducer.sendTo(kafkaTopic, kafkaDTO);
+        return taskMapper.toDTO(updated);
     }
 
-    private TaskDto convertToDto(Task task) {
-        return new TaskDto(
-                task.getId(),
-                task.getTitle(),
-                task.getDescription(),
-                task.getUserId());
-    }
 }

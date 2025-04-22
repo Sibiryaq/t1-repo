@@ -12,3 +12,35 @@ spring:
       mode: always
       schema-locations: classpath:schema.sql
       data-locations: classpath:data.sql
+
+  kafka:
+    bootstrap-servers: localhost:9092
+    consumer:
+      group-id: task-status-group
+      auto-offset-reset: earliest
+
+    listener:
+      ack-mode: manual
+      type: batch
+
+  mail:
+    host: smtp.gmail.com
+    port: 587
+    username: alexandrt208@gmail.com
+    password: zrrw whid qugg ydcu
+    properties:
+      mail:
+        smtp:
+          auth: true
+          starttls:
+            enable: true
+
+task:
+  kafka:
+    topic:
+      status-updated: task-status-topic
+    consumer:
+      group-id: task-status-group
+
+notification:
+  email: sibiryaqdev@mail.ru
