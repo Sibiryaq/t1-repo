@@ -39,8 +39,10 @@ class TaskControllerIntegrationTest {
 
     @Autowired
     private MockMvc mockMvc;
-    @Autowired private ObjectMapper objectMapper;
-    @Autowired private TaskRepository taskRepository;
+    @Autowired 
+    private ObjectMapper objectMapper;
+    @Autowired
+    private TaskRepository taskRepository;
 
     @BeforeEach
     void setUp() {

@@ -7,9 +7,9 @@ import com.t1_academy.t1_repo.model.dto.TaskDTO;
 import com.t1_academy.t1_repo.model.entity.Task;
 import com.t1_academy.t1_repo.model.entity.TaskStatus;
 import com.t1_academy.t1_repo.repository.TaskRepository;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
-import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 
@@ -17,8 +17,8 @@ import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
 
-import static org.junit.jupiter.api.Assertions.*;
-import static org.mockito.ArgumentMatchers.any;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.ArgumentMatchers.anyLong;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
@@ -28,23 +28,27 @@ class TaskServiceTest {
 
     @Mock
     private TaskRepository taskRepository;
-    @Mock
-    private TaskMapper taskMapper;
+
     @Mock
     private KafkaTaskProducer kafkaProducer;
 
-    @InjectMocks
     private TaskService taskService;
+
+    @BeforeEach
+    void setUp() {
+        TaskMapper taskMapper = new TaskMapper();
+        taskService = new TaskService(taskRepository, taskMapper, kafkaProducer);
+    }
 
     @Test
     void getTasks_shouldReturnListOfTasks() {
         List<Task> tasks = List.of(new Task(1L, "title", "desc", 1L, TaskStatus.NEW));
         when(taskRepository.findAll()).thenReturn(tasks);
-        when(taskMapper.toDTO(any())).thenReturn(new TaskDTO(1L, "title", "desc", 1L, TaskStatus.NEW));
 
         List<TaskDTO> result = taskService.getTasks();
 
         assertEquals(1, result.size());
+        verify(taskRepository).findAll();
     }
 
     @Test
@@ -58,7 +62,6 @@ class TaskServiceTest {
     void getTaskById_shouldReturnTask() {
         Task task = new Task(1L, "title", "desc", 1L, TaskStatus.NEW);
         when(taskRepository.findById(1L)).thenReturn(Optional.of(task));
-        when(taskMapper.toDTO(task)).thenReturn(new TaskDTO(1L, "title", "desc", 1L, TaskStatus.NEW));
 
         TaskDTO dto = taskService.getTaskById(1L);
 
