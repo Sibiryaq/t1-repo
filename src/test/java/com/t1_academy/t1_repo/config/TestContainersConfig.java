@@ -1,6 +1,5 @@
 package com.t1_academy.t1_repo.config;
 
-import org.junit.jupiter.api.TestInstance;
 import org.springframework.test.context.DynamicPropertyRegistry;
 import org.springframework.test.context.DynamicPropertySource;
 import org.testcontainers.containers.KafkaContainer;
@@ -10,7 +9,6 @@ import org.testcontainers.junit.jupiter.Testcontainers;
 
 
 @Testcontainers
-@TestInstance(TestInstance.Lifecycle.PER_CLASS)
 public class TestContainersConfig {
 
     @Container
