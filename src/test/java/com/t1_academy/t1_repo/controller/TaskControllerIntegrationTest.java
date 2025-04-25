@@ -1,18 +1,16 @@
 package com.t1_academy.t1_repo.controller;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.t1_academy.t1_repo.kafka.KafkaTaskProducer;
+import com.t1_academy.t1_repo.config.TestContainersConfig;
 import com.t1_academy.t1_repo.model.dto.TaskDTO;
 import com.t1_academy.t1_repo.model.entity.Task;
 import com.t1_academy.t1_repo.model.entity.TaskStatus;
 import com.t1_academy.t1_repo.repository.TaskRepository;
-import jakarta.annotation.PostConstruct;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.boot.test.context.TestConfiguration;
 import org.springframework.http.MediaType;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.web.servlet.MockMvc;
@@ -20,14 +18,9 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.util.Optional;
 
-import static org.junit.jupiter.api.Assertions.*;
-import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.ArgumentMatchers.anyString;
-import static org.mockito.Mockito.doNothing;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.delete;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.put;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
@@ -35,11 +28,11 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 @AutoConfigureMockMvc
 @ActiveProfiles("test")
 @Transactional
-class TaskControllerIntegrationTest {
+class TaskControllerIntegrationTest extends TestContainersConfig {
 
     @Autowired
     private MockMvc mockMvc;
-    @Autowired 
+    @Autowired
     private ObjectMapper objectMapper;
     @Autowired
     private TaskRepository taskRepository;
@@ -96,17 +89,7 @@ class TaskControllerIntegrationTest {
         Optional<Task> updated = taskRepository.findById(saved.getId());
         assertTrue(updated.isPresent());
         assertEquals(TaskStatus.COMPLETED, updated.get().getStatus());
+
     }
 
-    @TestConfiguration
-    public class KafkaMockConfig {
-
-        private KafkaTaskProducer kafkaTaskProducer;
-
-        // Можно задать поведение, если требуется:
-        @PostConstruct
-        public void setUpMockBehavior() {
-            doNothing().when(kafkaTaskProducer).sendTo(anyString(), any());
-        }
-    }
 }

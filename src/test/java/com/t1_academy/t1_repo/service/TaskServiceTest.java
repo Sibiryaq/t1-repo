@@ -17,11 +17,8 @@ import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertThrows;
-import static org.mockito.ArgumentMatchers.anyLong;
-import static org.mockito.Mockito.verify;
-import static org.mockito.Mockito.when;
+import static org.junit.jupiter.api.Assertions.*;
+import static org.mockito.Mockito.*;
 
 @ExtendWith(MockitoExtension.class)
 class TaskServiceTest {
@@ -51,6 +48,7 @@ class TaskServiceTest {
         verify(taskRepository).findAll();
     }
 
+
     @Test
     void getTasks_shouldThrowWhenEmpty() {
         when(taskRepository.findAll()).thenReturn(Collections.emptyList());
@@ -66,6 +64,7 @@ class TaskServiceTest {
         TaskDTO dto = taskService.getTaskById(1L);
 
         assertEquals("title", dto.getTitle());
+        verify(taskRepository).findById(1L);
     }
 
     @Test
@@ -87,4 +86,20 @@ class TaskServiceTest {
         when(taskRepository.existsById(anyLong())).thenReturn(false);
         assertThrows(TaskNotFoundException.class, () -> taskService.delete(1L));
     }
+
+    @Test
+    void create_shouldSaveAndReturnTaskDTO() {
+        TaskDTO inputDto = new TaskDTO(null, "New Task", "Description", 1L, TaskStatus.NEW);
+        Task savedEntity = new Task(1L, "New Task", "Description", 1L, TaskStatus.NEW);
+
+        when(taskRepository.save(any(Task.class))).thenReturn(savedEntity);
+
+        TaskDTO result = taskService.create(inputDto);
+
+        assertNotNull(result);
+        assertEquals("New Task", result.getTitle());
+        assertEquals(1L, result.getId());
+        verify(taskRepository).save(any(Task.class));
+    }
+
 }
