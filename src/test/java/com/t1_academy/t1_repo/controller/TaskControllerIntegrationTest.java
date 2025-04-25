@@ -7,6 +7,7 @@ import com.t1_academy.t1_repo.model.entity.Task;
 import com.t1_academy.t1_repo.model.entity.TaskStatus;
 import com.t1_academy.t1_repo.repository.TaskRepository;
 import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
@@ -43,6 +44,7 @@ class TaskControllerIntegrationTest extends TestContainersConfig {
     }
 
     @Test
+    @DisplayName("Создание задачи")
     void createTask_shouldReturnCreated() throws Exception {
         TaskDTO dto = new TaskDTO(null, "Test", "desc", 1L, TaskStatus.NEW);
 
@@ -54,6 +56,7 @@ class TaskControllerIntegrationTest extends TestContainersConfig {
     }
 
     @Test
+    @DisplayName("Получение задачи по ID")
     void getTaskById_shouldReturnTask() throws Exception {
         Task saved = taskRepository.save(new Task(null, "title", "desc", 1L, TaskStatus.NEW));
 
@@ -63,12 +66,14 @@ class TaskControllerIntegrationTest extends TestContainersConfig {
     }
 
     @Test
+    @DisplayName("Получение несуществующей задачи")
     void getTaskById_shouldReturnNotFound() throws Exception {
         mockMvc.perform(get("/tasks/999"))
                 .andExpect(status().isNotFound());
     }
 
     @Test
+    @DisplayName("Удаление задачи")
     void deleteTask_shouldReturnOk() throws Exception {
         Task task = taskRepository.save(new Task(null, "to delete", "desc", 1L, TaskStatus.NEW));
 
@@ -77,6 +82,7 @@ class TaskControllerIntegrationTest extends TestContainersConfig {
     }
 
     @Test
+    @DisplayName("Обновление задачи: должен изменить статус и вернуть 200")
     void updateTask_shouldChangeStatusAndReturnOk() throws Exception {
         Task saved = taskRepository.save(new Task(null, "t", "d", 1L, TaskStatus.NEW));
         TaskDTO updateDto = new TaskDTO(saved.getId(), "updated", "d", 1L, TaskStatus.COMPLETED);
@@ -89,7 +95,6 @@ class TaskControllerIntegrationTest extends TestContainersConfig {
         Optional<Task> updated = taskRepository.findById(saved.getId());
         assertTrue(updated.isPresent());
         assertEquals(TaskStatus.COMPLETED, updated.get().getStatus());
-
     }
 
 }

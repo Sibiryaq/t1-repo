@@ -8,6 +8,7 @@ import com.t1_academy.t1_repo.model.entity.Task;
 import com.t1_academy.t1_repo.model.entity.TaskStatus;
 import com.t1_academy.t1_repo.repository.TaskRepository;
 import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Mock;
@@ -38,6 +39,7 @@ class TaskServiceTest {
     }
 
     @Test
+    @DisplayName("Получение списка задач")
     void getTasks_shouldReturnListOfTasks() {
         List<Task> tasks = List.of(new Task(1L, "title", "desc", 1L, TaskStatus.NEW));
         when(taskRepository.findAll()).thenReturn(tasks);
@@ -50,6 +52,7 @@ class TaskServiceTest {
 
 
     @Test
+    @DisplayName("Получение задач при пустом списке")
     void getTasks_shouldThrowWhenEmpty() {
         when(taskRepository.findAll()).thenReturn(Collections.emptyList());
 
@@ -57,6 +60,7 @@ class TaskServiceTest {
     }
 
     @Test
+    @DisplayName("Получение задачи по ID")
     void getTaskById_shouldReturnTask() {
         Task task = new Task(1L, "title", "desc", 1L, TaskStatus.NEW);
         when(taskRepository.findById(1L)).thenReturn(Optional.of(task));
@@ -68,6 +72,7 @@ class TaskServiceTest {
     }
 
     @Test
+    @DisplayName("Получение задачи по ID, если не найдена")
     void getTaskById_shouldThrowIfNotFound() {
         when(taskRepository.findById(anyLong())).thenReturn(Optional.empty());
 
@@ -75,6 +80,7 @@ class TaskServiceTest {
     }
 
     @Test
+    @DisplayName("Удаление задачи")
     void delete_shouldCallRepository() {
         when(taskRepository.existsById(1L)).thenReturn(true);
         taskService.delete(1L);
@@ -82,12 +88,14 @@ class TaskServiceTest {
     }
 
     @Test
+    @DisplayName("Удаление несуществующей задачи")
     void delete_shouldThrowIfNotExists() {
         when(taskRepository.existsById(anyLong())).thenReturn(false);
         assertThrows(TaskNotFoundException.class, () -> taskService.delete(1L));
     }
 
     @Test
+    @DisplayName("Создание задачи")
     void create_shouldSaveAndReturnTaskDTO() {
         TaskDTO inputDto = new TaskDTO(null, "New Task", "Description", 1L, TaskStatus.NEW);
         Task savedEntity = new Task(1L, "New Task", "Description", 1L, TaskStatus.NEW);
